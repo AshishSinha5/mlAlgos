@@ -6,20 +6,19 @@ Created on Fri Apr 17 07:50:26 2020
 """
 
 import pandas as pd
-import numpy as np
 from sklearn.model_selection import cross_val_score
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.naive_bayes import MultinomialNB 
-from sklearn.pipeline import make_union, make_pipeline
-from sklearn.preprocessing import FunctionTransformer, MinMaxScaler, LabelEncoder,StandardScaler
-from sklearn.svm import SVC 
-import pickle
+from sklearn.naive_bayes import GaussianNB
+from sklearn.preprocessing import LabelEncoder
+from sklearn.svm import SVC
+from joblib import dump
 
 df = pd.read_csv("bank-data/bank-additional-full.csv", sep = ";")
 
 
+enc = []
+
 def modify_df(df):
-    enc = []
     for i in df.columns:
         if type(df[i][0]) is str:
             enc.append(i)
@@ -32,32 +31,30 @@ modify_df(df_mod)
 
 #X = df_mod.iloc[:,:-1].values
 #y = df_mod.iloc[:,-1].values
-'''
+
 def fit_naive_bayes(df):
     
-    clf = MultinomialNB()
-    vec = make_union(*[
-            make_pipeline(FunctionTransformer(df_mod['cons.conf.idx'],validate = False), 
-                          MinMaxScaler(),clf)
-        ])
-    scores = cross_val_score(vec,df_mod[:,:-1],df_mod[:,-1], cv = 10)
+    clf = GaussianNB()
+    scores = cross_val_score(clf,df_mod.iloc[:,:-1],df_mod.iloc[:,-1], cv = 10)
+    dump(clf, 'naive_bayes.joblib')
     print(scores.mean())
-'''
+
 
 def fit_decision_tree(df):
     
     clf = DecisionTreeClassifier()
-    
     score = cross_val_score(clf,df.iloc[:,:-1],df.iloc[:,-1], cv = 10)
+    dump(clf, 'decision_tree.joblib')
     print(score.mean())
     
 def fit_svm(df):
     
-    clf = SVC()
+    clf = SVC(kernel = 'linear')
     score = cross_val_score(clf,df.iloc[:,:-1],df.iloc[:,-1], cv = 10) 
+    dump(clf, 'svm.joblib')
     print(score.mean())
    
 
-#fit_naive_bayes(df_mod)
+fit_naive_bayes(df_mod)
 fit_decision_tree(df_mod)
 fit_svm(df_mod)
