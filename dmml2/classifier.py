@@ -13,6 +13,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import make_union, make_pipeline
 from sklearn.preprocessing import FunctionTransformer, MinMaxScaler, LabelEncoder,StandardScaler
 from sklearn.svm import SVC 
+import pickle
 
 df = pd.read_csv("bank-data/bank-additional-full.csv", sep = ";")
 
@@ -53,7 +54,7 @@ def fit_decision_tree(df):
 def fit_svm(df):
     
     clf = SVC()
-    score = cross_val_score(clf,df.iloc[:,:-1],df.iloc[:,-1], cv = 10)
+    score = cross_val_score(clf,df.iloc[:,:-1],df.iloc[:,-1], cv = 10) 
     print(score.mean())
    
 
